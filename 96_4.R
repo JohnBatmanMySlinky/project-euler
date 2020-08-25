@@ -25,8 +25,6 @@ possible_numbers <- function(sdk, i, x, y){
                      trunc((y-1e-4)/3)*3+1:3]
     winners <- c(1:9)[1:9 %notin% c(vert, horz, TbyT)]
     
-    #if (i == 3 & x == 1 & y == 1){browser()}
-    
     if (length(winners)==1){
       return(paste0(winners))
     } else {
@@ -60,7 +58,8 @@ easy_answers <- function(sdk_output, sdk_possible, i){
       for (y in 1:9){
         sdk_possible[[i]][x,y] <- possible_numbers(sdk_output, i, x, y)
       }
-    } 
+    }
+    
     count_of_1s_post <- sum(nchar(sdk_possible[[i]])==1)
   }
   
@@ -69,7 +68,40 @@ easy_answers <- function(sdk_output, sdk_possible, i){
 }
 
 
-
+unique_solution <- function(sdk,i,x,y){
+  if (nchar(sdk[[i]][x,y])>1){
+    z <- strsplit(sdk[[i]][x,y],"")[[1]]
+    
+    x_possible <- sdk[[i]][x,-y]
+    x_possible <- paste0(x_possible,collapse = "")
+    x_possible <- strsplit(x_possible,"")[[1]]
+    
+    y_possible <- sdk[[i]][-x,y]
+    y_possible <- paste0(y_possible,collapse = "")
+    y_possible <- strsplit(y_possible,"")[[1]]
+    
+    x_index <- trunc((x-.5)/3)*3+1:3
+    y_index <- trunc((y-.5)/3)*3+1:3
+    
+    TbyT_x <- sdk[[i]][x_index,
+                       y_index[y_index != y]]
+    TbyT_y <- sdk[[i]][x_index[x_index != x],
+                       y_index]
+    TbyT <- paste0(TbyT_x, TbyT_y, collapse = "")
+    TbyT <- strsplit(TbyT, "")[[1]]
+    
+    z <- z[z %notin% x_possible | z %notin% y_possible | z %notin% TbyT]
+    z <- paste0(z,collapse = "")
+    
+    if(nchar(z)==0){
+      return(sdk[[i]][x,y])
+    } else{
+      return(z)
+    }
+  } else {
+    return(sdk[[i]][x,y])
+  }
+}
 
 
 # let the solve begin
@@ -80,8 +112,6 @@ for (i in 1:50){
   improve_post <- 1
   while (sum(nchar(sudoku_possible[[i]])==1) < 81 & loop < 20){
     
-    #browser()
-    
     loop <- loop + 1
     
     # easy answer loop
@@ -90,7 +120,13 @@ for (i in 1:50){
                                          i)
     sudoku_output[[i]] <- easy_answers_results[[1]]
     sudoku_possible[[i]] <- easy_answers_results[[2]]
+    
+    for (x in 1:9){
+      for (y in 1:9){
+        sudoku_possible[[i]][x,y] <- unique_solution(sudoku_possible, i, x, y)
+      }
+    }
   }
-print(paste("Board: ", i,
-            "Tiles: ", sum(nchar(sudoku_possible[[i]])==1)))
+  print(paste("Board: ", i,
+              "Tiles: ", sum(nchar(sudoku_possible[[i]])==1)))
 }

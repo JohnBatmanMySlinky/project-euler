@@ -69,7 +69,20 @@ easy_answers <- function(sdk_output, sdk_possible, i){
 }
 
 
-
+unique_solution <- function(sdk,i,x,y){
+  z <- sdk[[i]][x,y]
+  if (nchar(z)>1){
+    x <- sdk[[i]][x,!y]
+    x <- strsplit(x,"")[[1]]
+    
+    y <- sdk[[i]][y,!x]
+    y <- strsplit(y,"")[[1]]
+    
+    x_index <- trunc((x-.5)/3)*3+1:3
+    y_index <- trunc((y-.5)/3)*3+1:3
+    TbyT <- sdk[[i]][]
+  }
+}
 
 
 # let the solve begin
@@ -79,8 +92,6 @@ for (i in 1:50){
   improve_pre <- 0
   improve_post <- 1
   while (sum(nchar(sudoku_possible[[i]])==1) < 81 & loop < 20){
-    
-    #browser()
     
     loop <- loop + 1
     
@@ -94,3 +105,5 @@ for (i in 1:50){
 print(paste("Board: ", i,
             "Tiles: ", sum(nchar(sudoku_possible[[i]])==1)))
 }
+
+sudoku_possible[[2]]
