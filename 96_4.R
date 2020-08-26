@@ -35,39 +35,6 @@ possible_numbers <- function(sdk, i, x, y){
   }
 }
 
-# initialize possible numbers
-sudoku_possible <- sudoku
-for (i in 1:50){
-  for (x in 1:9){
-    for (y in 1:9){
-      sudoku_possible[[i]][x,y] <- possible_numbers(sudoku, i, x, y)
-    }
-  }
-}
-
-easy_answers <- function(sdk_output, sdk_possible, i){
-  count_of_1s_post <- 1
-  count_of_1s_pre <- 0
-  while (count_of_1s_post > count_of_1s_pre){
-    count_of_1s_pre <- sum(nchar(sdk_possible[[i]])==1)
-    
-    index_dumb <- nchar(sdk_possible[[i]]) == 1
-    sdk_output[[i]][index_dumb] <- as.numeric(sdk_possible[[i]][index_dumb])
-    
-    for (x in 1:9){
-      for (y in 1:9){
-        sdk_possible[[i]][x,y] <- possible_numbers(sdk_output, i, x, y)
-      }
-    }
-    
-    count_of_1s_post <- sum(nchar(sdk_possible[[i]])==1)
-  }
-  
-  return(list(sdk_output[[i]],
-              sdk_possible[[i]]))
-}
-
-
 unique_solution <- function(sdk,i,x,y){
   if (nchar(sdk[[i]][x,y])>1){
     z <- strsplit(sdk[[i]][x,y],"")[[1]]
@@ -103,30 +70,98 @@ unique_solution <- function(sdk,i,x,y){
   }
 }
 
-
-# let the solve begin
-sudoku_output <- sudoku
-for (i in 1:50){
-  loop <- 0
-  improve_pre <- 0
-  improve_post <- 1
-  while (sum(nchar(sudoku_possible[[i]])==1) < 81 & loop < 20){
+easy_answers <- function(sdk_output, sdk_possible, i){
+  count_of_1s_post <- 1
+  count_of_1s_pre <- 0
+  while (count_of_1s_post > count_of_1s_pre){
+    count_of_1s_pre <- sum(nchar(sdk_possible[[i]])==1)
     
-    loop <- loop + 1
-    
-    # easy answer loop
-    easy_answers_results <- easy_answers(sudoku_output,
-                                         sudoku_possible,
-                                         i)
-    sudoku_output[[i]] <- easy_answers_results[[1]]
-    sudoku_possible[[i]] <- easy_answers_results[[2]]
+    index_dumb <- nchar(sdk_possible[[i]]) == 1
+    sdk_output[[i]][index_dumb] <- as.numeric(sdk_possible[[i]][index_dumb])
     
     for (x in 1:9){
       for (y in 1:9){
-        sudoku_possible[[i]][x,y] <- unique_solution(sudoku_possible, i, x, y)
+        sdk_possible[[i]][x,y] <- possible_numbers(sdk_output, i, x, y)
+        sdk_possible[[i]][x,y] <- unique_solution(sdk_possible, i, x, y)
       }
     }
+    
+    count_of_1s_post <- sum(nchar(sdk_possible[[i]])==1)
   }
+  
+  return(list(sdk_output[[i]],
+              sdk_possible[[i]]))
+}
+
+
+# initialize possible numbers for each board
+sudoku_possible <- sudoku
+for (i in 1:50){
+  for (x in 1:9){
+    for (y in 1:9){
+      sudoku_possible[[i]][x,y] <- possible_numbers(sudoku, i, x, y)
+    }
+  }
+}
+
+
+
+# Run easy answers once
+sudoku_output <- sudoku
+for (i in 1:50){
+  easy_answers_results <- easy_answers(sudoku_output,
+                                       sudoku_possible,
+                                       i)
+  sudoku_output[[i]] <- easy_answers_results[[1]]
+  sudoku_possible[[i]] <- easy_answers_results[[2]]
+  
   print(paste("Board: ", i,
               "Tiles: ", sum(nchar(sudoku_possible[[i]])==1)))
 }
+
+
+# for boards not solved, time to start guessing!
+for (i in 6){
+  
+  # this builds the board of guesses to run through
+  guess_filter <- nchar(sudoku_possible[[i]])>1
+  for (outer in 1:length(sudoku_possible[[i]][guess_filter])){
+    big_grid <- list()
+    for (inner in 1:length(sudoku_possible[[i]][guess_filter][1:outer])){
+      big_grid[[inner]] <- strsplit(sudoku_possible[[i]][guess_filter][inner]   ,"")[[1]]
+    }
+  big_grid <- expand.grid(big_grid)
+  sudoku_possible_guess <- sudoku_possible
+  sudoku_output_guess <- sudoku_possible
+  
+  # load results into sudoku_possible_guess and run easy_answers and check if it works
+  for (n in 1:nrow(big_grid)){
+    for (c in 1:ncol(big_grid)){
+      sudoku_possible_guess[[i]][guess_filter][c] <- as.character(big_grid[n,c])
+      ##################
+      ###Update Board###
+      ##################
+      
+      #################
+      ###Check Board###
+      #################
+    }
+    browser()
+    guess_results <- easy_answers(sudoku_possible_guess,
+                                  sudoku_output_guess,
+                                  i)
+    print(guess_results[[2]])
+    if(sum(nchar(guess_results[[2]])==1)==81){
+      print('holy shit it worked!')
+    }
+  }
+  
+  }
+}
+  
+  # for each row and column load in big_grid into sudoku_possible_guess[[i]]
+
+
+big_grid
+
+
