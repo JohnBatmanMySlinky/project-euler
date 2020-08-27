@@ -1,7 +1,5 @@
 rm(list = ls())
-
-library(ggplot2)
-library(tidyverse)
+ptm <- proc.time()
 
 set.seed(1)
 `%notin%` = Negate(`%in%`)
@@ -212,3 +210,4 @@ for (each in sudoku_output){
   euler <- euler + as.numeric(paste0(each[1,1],each[1,2],each[1,3], collapse = ""))
 }
 euler
+proc.time()-ptm
