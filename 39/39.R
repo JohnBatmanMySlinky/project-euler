@@ -9,6 +9,7 @@
 
 # a < P/3
 # substitute gives me (p^2-2pa)/(2p-2a) = b so b must be integer
+ptm <- proc.time()
 
 P <- 1000
 answers <- matrix(0,P,1)
@@ -22,4 +23,6 @@ for (p in 1:P){ # loop thru p's
   }
 }
 which(answers == max(answers),answers) # which p gives us max answers
+
+proc.time() - ptm
       
