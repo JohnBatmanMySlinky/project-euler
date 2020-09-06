@@ -11,6 +11,15 @@
 
 # so
 # today we learn about diophantine equations
+# i did a decent amount of reverse engineering and using sympy but
+# I learned alot so that's nice
+
+from sympy.solvers.diophantine import transformation_to_DN, diophantine, diop_DN, find_DN
+from sympy import *
+
+x, y = symbols("x, y", integer = True)
+A, B = transformation_to_DN(x**2 -2*x*y - y**2 - x + y)
+D, N = find_DN(x**2 -2*x*y - y**2 - x + y)
 
 def pell(y):
     return((8*y**2+1)**.5)
@@ -27,9 +36,12 @@ def brahmagupta(z):
     y_tmp = z[0][0] * z[1][1] + z[0][1] * z[1][0]
     return([x_tmp, y_tmp])
 
-for j in range(0,6):
-    for k in range(0,6):
-        answers.append(brahmagupta([answers[j],answers[k]]))
-        assert answers[-1][0] != 756872327473.0
 
-print(answers)
+for i in range(0,100):
+    answers.append(brahmagupta([answers[0],answers[i]]))
+
+pls = [A*Matrix(x)+B for x in answers]
+for each in pls:
+    if each[0]+each[1]>10**12:
+        print(each[0])
+        break
