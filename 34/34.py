@@ -1,15 +1,13 @@
 from math import factorial
 
-upper = 50000
-fact_dict = {}
 
-fact_dict[upper] = factorial(upper)
-for x in reversed(range(0,upper)):
+fact_dict = {}
+fact_dict[9] = factorial(9)
+for x in reversed(range(0,9)):
     fact_dict[x] = fact_dict[x+1]/(x+1)
 
 
-# print(sum([(fact_dict[int(x)]) for x in list(str(145))]) == 145)
-
+upper = 50000
 answer = 0
 for each in range(3,upper):
     if sum([fact_dict[int(x)] for x in list(str(each))]) == each:
