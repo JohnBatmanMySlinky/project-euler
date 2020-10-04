@@ -11,9 +11,6 @@ import numpy as np
 index = np.cumsum([0] + [9*x*10**(x-1) for x in range(1,7)])
 ds = [10**x for x in range(0,7)]
 
-print(ds)
-print(index)
-
 answer = []
 for each in ds:
     pos = 7-sum(each < index)
