@@ -20,9 +20,14 @@ def is_pandigital(x):
 
 def Sieve_of_Eratosthenes(n):
     answer = [x for x in range(2,n+1)]
-    for x in range(2,int(n**0.5)+1):
-        sieve = [x*y for y in range(1,int(n/x)+1)]
-        answer = [z for z in answer if z not in sieve]
+    for x in range(2,int(n**0.5)+1):          
+        i = 0
+        while x**2 + x*i <= n:
+            try:
+                answer.remove(x**2 + x*i)
+            except:
+                pass
+            i = i +1
     return(answer)
 
 
