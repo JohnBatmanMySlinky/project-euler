@@ -30,6 +30,19 @@ def Sieve_of_Eratosthenes(n):
             i = i +1
     return(answer)
 
+def prime_factorization(n):
+    i = 2
+    factors = []
+    if ~is_prime(n):
+        while i < n:
+            if n % i == 0:
+                n = n / i
+                factors.append(int(i))
+                i = 1
+            i = i + 1
+    factors.append(int(n))
+    return(factors)
+
 
 if __name__ == "__main__":
     print(Sieve_of_Eratosthenes(50))
