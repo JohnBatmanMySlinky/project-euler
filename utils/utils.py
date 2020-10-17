@@ -19,16 +19,21 @@ def is_pandigital(x):
 
 
 def Sieve_of_Eratosthenes(n):
-    answer = [x for x in range(2,n+1)]
-    for x in range(2,int(n**0.5)+1):          
-        i = 0
-        while x**2 + x*i <= n:
-            try:
-                answer.remove(x**2 + x*i)
-            except:
-                pass
-            i = i +1
-    return(answer)
+    answer = [True for x in range(n+1)]
+    answer[0] = False
+    answer[1] = False
+    x = 2
+    while (x*x <= n):
+        if answer[x]:
+            for i in range(x*2,n+1,x):
+                answer[i] = False
+        x += 1
+
+    winners = []
+    for z in range(n+1):
+        if answer[z]:
+            winners.append(z)
+    return(winners)
 
 def prime_factorization(n):
     i = 2
@@ -45,4 +50,4 @@ def prime_factorization(n):
 
 
 if __name__ == "__main__":
-    print(Sieve_of_Eratosthenes(50))
+    print((Sieve_of_Eratosthenes(50)))
