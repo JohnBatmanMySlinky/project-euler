@@ -84,16 +84,20 @@ def winner(p1, p2):
             p2_score = globals()[k](p2)
         else:
             p1_score = globals()[k](p1,
-                                   v[0],
-                                   v[1])
+                                    v[0],
+                                    v[1])
             p2_score = globals()[k](p2,
-                                   v[0],
-                                   v[1])
-
+                                    v[0],
+                                    v[1])
+        # running thru check functions in order, so if someone wins, return and stop
+        #p1 wins
         if p1_score & ~p2_score:
              return(1)
+        #p2 wins
         if ~p1_score & p2_score:
              return(2)
+    # tie!
+    # or highest card
     return(0)
 
 # def tie_breaker()
@@ -106,8 +110,9 @@ def winner(p1, p2):
 
 
 p1_wins = 0
-# for each in file[:1]:
-for each in [['2D', '9C', 'AS', 'AH', 'AC', '3D', '6D', '7D', 'TD', 'QD']]:
+for each in file[:1]:
+# for each in [['2D', '9C', 'AS', 'AH', 'AC', '3D', '6D', '7D', 'TD', 'QD']]:
+# for each in [['5H', '5C', '6S', '7S', 'KD', '2C', '3S', '8S', '8D', 'TD']]:
     p1_hand = each[:5]
     p2_hand = each[5:]
     print(p1_hand)
