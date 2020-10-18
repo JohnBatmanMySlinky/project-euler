@@ -17,13 +17,6 @@ with open('./54.txt') as f:
     for l in f:
         file.append(l.strip('\n').split(' '))
 
-n_of_a_kind_dict = {
-    '21': 2,
-    '22': 3,
-    '31': 4,
-    '41': 8
-}
-
 straight_dict = {
     '1':1,
     '2':2,
@@ -41,59 +34,85 @@ straight_dict = {
     'A':14
 }
 
-def n_of_a_kind(hand, n, i):
+def check_n_of_a_kind(hand, n, i):
     hand_val = [x[0] for x in hand]
     target = ''.join([str(n)] * n * i)
-    if (''.join(sorted([str(hand_val.count(x)) for x in hand_val]))).find(target) > -1:
-        return(n_of_a_kind_dict[str(n)+str(i)])
-    else:
-        return(0)
+    return((''.join(sorted([str(hand_val.count(x)) for x in hand_val]))).find(target) > -1)
 
 def check_full_house(hand):
-    if n_of_a_kind(hand,3,1) & n_of_a_kind(hand,2,1):
-        return(7)
-    else:
-        return(0)
+    return(check_n_of_a_kind(hand,3,1) & check_n_of_a_kind(hand,2,1))
 
 def check_straight(hand):
     hand_num = sorted([straight_dict[x[0]] for x in hand])
     answer = []
     for x in range(1,5):
         answer.append(hand_num[x] == hand_num[x-1]+1)
-    if all(answer):
-        return(5)
-    else:
-        return(0)
+    return(all(answer))
 
 def check_flush(hand):
-    if all([x[1] == hand[0][1] for x in hand]):
-        return(6)
-    else:
-        return(0)
+    return(all([x[1] == hand[0][1] for x in hand]))
 
 def check_straight_flush(hand):
-    if check_straight(hand) & check_flush(hand):
-        return(9)
-    else:
-        return(0)
+    return(check_straight(hand) & (check_flush(hand)>0))
 
 def check_royal_flush(hand):
     royal = ['T', 'J', 'Q', 'K', 'A']
     for each in hand:
         if each[0] in royal:
             royal.remove(each[0])
-    if (not royal) & (check_flush(hand)):
+    if (not royal) & check_flush(hand):
         return(10)
     else:
         return(0)
 
+scoring_dict = {
+    "check_royal_flush": [],
+    "check_straight_flush": [],
+    "check_n_of_a_kind": [4,1],
+    "check_full_house": [],
+    "check_flush": [],
+    "check_straight": [],
+    "check_n_of_a_kind": [3,1],
+    "check_n_of_a_kind": [2,2],
+    "check_n_of_a_kind": [2,1],
+}
+
 def winner(p1, p2):
+    for k, v in scoring_dict.items():
+        if not v:
+            p1_score = globals()[k](p1)
+            p2_score = globals()[k](p2)
+        else:
+            p1_score = globals()[k](p1,
+                                   v[0],
+                                   v[1])
+            p2_score = globals()[k](p2,
+                                   v[0],
+                                   v[1])
+
+        if p1_score & ~p2_score:
+             return(1)
+        if ~p1_score & p2_score:
+             return(2)
+    return(0)
+
+# def tie_breaker()
+
+
+# test  = ['3C', '3D', '3S', '7S', '7D']
+# func = "check_n_of_a_kind"
+# print(locals()[func](test,2,1))
+
 
 
 p1_wins = 0
-for each in file[:1]:
+# for each in file[:1]:
+for each in [['2D', '9C', 'AS', 'AH', 'AC', '3D', '6D', '7D', 'TD', 'QD']]:
     p1_hand = each[:5]
     p2_hand = each[5:]
+    print(p1_hand)
+    print(p2_hand)
+    print(winner(p1_hand, p2_hand))
 
 
 # translate each hand to a point value
