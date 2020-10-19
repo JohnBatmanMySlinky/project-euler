@@ -35,22 +35,70 @@ straight_dict = {
 }
 
 def check_n_of_a_kind(hand, n, i):
+    # bool, pass check
     hand_val = [x[0] for x in hand]
     target = ''.join([str(n)] * n * i)
-    return((''.join(sorted([str(hand_val.count(x)) for x in hand_val]))).find(target) > -1)
+    answer = (''.join(sorted([str(hand_val.count(x)) for x in hand_val]))).find(target) > -1
+
+    # max used in answer
+    if answer:
+        val = list(set([x for x in hand_val if hand_val.count(x) == n]))
+    else:
+        val = '0'
+
+    # rest of hand to be checked again
+    remainder = [x for x in hand if x[0] != val[0]]
+
+    # return
+    return([answer, straight_dict[val[0]], remainder])
 
 def check_full_house(hand):
-    return(check_n_of_a_kind(hand,3,1) & check_n_of_a_kind(hand,2,1))
+    # bool answer
+    answer = check_n_of_a_kind(hand,3,1)[0] & check_n_of_a_kind(hand,2,1)[0]
+
+    # value of winning
+    hand_val = [x[0] for x in hand]
+    val = []
+    if answer:
+        val.append(list(set([x for x in hand_val if hand_val.count(x) == 3]))[0])
+        val.append(list(set([x for x in hand_val if hand_val.count(x) == 2]))[0])
+        for z in range(len(val)):
+            val[z] = straight_dict[val[z]]
+    else:
+        val.append(0)
+
+    #full house uses all 5 cards so no remainder
+    remainder = [0]
+
+    #return
+    return([answer, val, remainder])
 
 def check_straight(hand):
+    #get answer
     hand_num = sorted([straight_dict[x[0]] for x in hand])
     answer = []
     for x in range(1,5):
         answer.append(hand_num[x] == hand_num[x-1]+1)
-    return(all(answer))
+    answer = all(answer)
+
+    # get value
+    val = []
+    if answer:
+        val.append(max(hand_num))
+    else:
+        val = [0]
+
+    # get remainder
+    remainder = [0]
+
+    # return
+    return([answer, val, remainder])
 
 def check_flush(hand):
     return(all([x[1] == hand[0][1] for x in hand]))
+
+test = ['9D', 'TD', '8D', 'QD', 'KD']
+print(check_straight(test))
 
 def check_straight_flush(hand):
     return(check_straight(hand) & (check_flush(hand)>0))
@@ -115,9 +163,11 @@ for each in file[:1]:
 # for each in [['5H', '5C', '6S', '7S', 'KD', '2C', '3S', '8S', '8D', 'TD']]:
     p1_hand = each[:5]
     p2_hand = each[5:]
-    print(p1_hand)
-    print(p2_hand)
-    print(winner(p1_hand, p2_hand))
+    result = winner(p1_hand, p2_hand)
+    if result == 1:
+        p1_wins += 1
+    if result == 0:
+        p1_wins = tie_breaker()
 
 
 # translate each hand to a point value
