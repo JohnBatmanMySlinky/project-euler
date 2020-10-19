@@ -18,6 +18,7 @@ with open('./54.txt') as f:
         file.append(l.strip('\n').split(' '))
 
 straight_dict = {
+    '0':0,
     '1':1,
     '2':2,
     '3':3,
@@ -34,6 +35,15 @@ straight_dict = {
     'A':14
 }
 
+def check_highest_card(hand):
+    answer = True
+
+    val = max([straight_dict[x[0]] for x in hand])
+
+    remainder = [x for x in hand if straight_dict[x[0]] != val]
+
+    return([answer, val, remainder])
+
 def check_n_of_a_kind(hand, n, i):
     # bool, pass check
     hand_val = [x[0] for x in hand]
@@ -44,7 +54,7 @@ def check_n_of_a_kind(hand, n, i):
     if answer:
         val = list(set([x for x in hand_val if hand_val.count(x) == n]))
     else:
-        val = '0'
+        val = ['0']
 
     # rest of hand to be checked again
     remainder = [x for x in hand if x[0] != val[0]]
@@ -95,58 +105,88 @@ def check_straight(hand):
     return([answer, val, remainder])
 
 def check_flush(hand):
-    return(all([x[1] == hand[0][1] for x in hand]))
+    answer = all([x[1] == hand[0][1] for x in hand])
 
-test = ['9D', 'TD', '8D', 'QD', 'KD']
-print(check_straight(test))
+    val = []
+    if answer:
+        val.append(max([straight_dict[x[0]] for x in hand]))
+    else:
+        val.append(0)
+
+    remainder = [0]
+
+    return([answer, val, remainder])
 
 def check_straight_flush(hand):
-    return(check_straight(hand) & (check_flush(hand)>0))
+    answer = check_straight(hand)[0] & check_flush(hand)[0]
+
+    val = []
+    if answer:
+        val.append(max([straight_dict[x[0]] for x in hand]))
+    else:
+        val.append(0)
+
+    remainder = [0]
+
+    return([answer, val, remainder])
 
 def check_royal_flush(hand):
     royal = ['T', 'J', 'Q', 'K', 'A']
     for each in hand:
         if each[0] in royal:
             royal.remove(each[0])
-    if (not royal) & check_flush(hand):
-        return(10)
-    else:
-        return(0)
+    answer = (not royal) & check_flush(hand)[0]
 
-scoring_dict = {
-    "check_royal_flush": [],
-    "check_straight_flush": [],
-    "check_n_of_a_kind": [4,1],
-    "check_full_house": [],
-    "check_flush": [],
-    "check_straight": [],
-    "check_n_of_a_kind": [3,1],
-    "check_n_of_a_kind": [2,2],
-    "check_n_of_a_kind": [2,1],
-}
+    val = []
+    if answer:
+        val.append(max([straight_dict[x[0]] for x in hand]))
+    else:
+        val.append(0)
+
+    remainder = [0]
+
+    return([answer, val, remainder])
+
+scoring_list = [
+    ["check_royal_flush", []],
+    ["check_straight_flush", []],
+    ["check_n_of_a_kind", [4,1]],
+    ["check_full_house", []],
+    ["check_flush", []],
+    ["check_straight", []],
+    ["check_n_of_a_kind", [3,1]],
+    ["check_n_of_a_kind", [2,2]],
+    ["check_n_of_a_kind", [2,1]],
+    ["check_highest_card", []]
+]
 
 def winner(p1, p2):
-    for k, v in scoring_dict.items():
-        if not v:
-            p1_score = globals()[k](p1)
-            p2_score = globals()[k](p2)
+    for each in scoring_list:
+        if not each[1]:
+            p1_score = globals()[each[0]](p1)
+            p2_score = globals()[each[0]](p2)
         else:
-            p1_score = globals()[k](p1,
-                                    v[0],
-                                    v[1])
-            p2_score = globals()[k](p2,
-                                    v[0],
-                                    v[1])
+            p1_score = globals()[each[0]](p1,
+                                          each[1][0],
+                                          each[1][1])
+            p2_score = globals()[each[0]](p2,
+                                          each[1][0],
+                                          each[1][1])
         # running thru check functions in order, so if someone wins, return and stop
         #p1 wins
-        if p1_score & ~p2_score:
-             return(1)
+        print(each[0])
+        print(p1_score)
+        print(p2_score)
+
+
+        if p1_score[0] & ~p2_score[0]:
+             return([1])
         #p2 wins
-        if ~p1_score & p2_score:
-             return(2)
+        if ~p1_score[0] & p2_score[0]:
+             return([2])
     # tie!
     # or highest card
-    return(0)
+    return([0, p1_score, p2_score])
 
 # def tie_breaker()
 
@@ -155,19 +195,32 @@ def winner(p1, p2):
 # func = "check_n_of_a_kind"
 # print(locals()[func](test,2,1))
 
+def tie_breaker(winner_result):
+    print(winner_result[1])
+    print(winner_result[2])
 
 
 p1_wins = 0
+i = 0
 for each in file[:1]:
-# for each in [['2D', '9C', 'AS', 'AH', 'AC', '3D', '6D', '7D', 'TD', 'QD']]:
-# for each in [['5H', '5C', '6S', '7S', 'KD', '2C', '3S', '8S', '8D', 'TD']]:
+    i += 1
     p1_hand = each[:5]
     p2_hand = each[5:]
+
+    print('-----------------------------------------')
+    print('hand: ' + str(i))
+    print(p1_hand)
+    print(p2_hand)
+
     result = winner(p1_hand, p2_hand)
-    if result == 1:
+    if result[0] == 1:
+        print('player 1 wins')
         p1_wins += 1
-    if result == 0:
-        p1_wins = tie_breaker()
+    if result[0] == 2:
+        print('player 2 wins')
+    if result[0] == 0:
+        print('oh shit a tie')
+        tie_breaker(result)
 
 
 # translate each hand to a point value
