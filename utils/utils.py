@@ -12,6 +12,12 @@ def is_prime(n):
 
     return(True)
 
+def is_palindrome(x):
+    if ~isinstance(x, str):
+        x = str(x)
+    cut = int(len(x)/2)
+    return(x[:cut] == ''.join(list(reversed(x[-cut:]))))
+
 def is_pandigital(x):
     if ~isinstance(x, str):
         x = str(x)

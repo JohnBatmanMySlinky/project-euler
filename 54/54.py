@@ -42,7 +42,7 @@ def check_highest_card(hand):
 
     remainder = [x for x in hand if straight_dict[x[0]] != val]
 
-    return([answer, val, remainder])
+    return([answer, [val], remainder])
 
 def check_n_of_a_kind(hand, n, i):
     # bool, pass check
@@ -52,15 +52,15 @@ def check_n_of_a_kind(hand, n, i):
 
     # max used in answer
     if answer:
-        val = list(set([x for x in hand_val if hand_val.count(x) == n]))
+        val = list(reversed(sorted(set([x for x in hand_val if hand_val.count(x) == n]))))
     else:
         val = ['0']
 
     # rest of hand to be checked again
-    remainder = [x for x in hand if x[0] != val[0]]
+    remainder = [x for x in hand if x[0] not in val]
 
     # return
-    return([answer, straight_dict[val[0]], remainder])
+    return([answer, [straight_dict[x] for x in val], remainder])
 
 def check_full_house(hand):
     # bool answer
@@ -78,7 +78,10 @@ def check_full_house(hand):
         val.append(0)
 
     #full house uses all 5 cards so no remainder
-    remainder = [0]
+    if answer:
+        remainder = [0]
+    else:
+        remainder = hand
 
     #return
     return([answer, val, remainder])
@@ -99,7 +102,10 @@ def check_straight(hand):
         val = [0]
 
     # get remainder
-    remainder = [0]
+    if answer:
+        remainder = [0]
+    else:
+        remainder = hand
 
     # return
     return([answer, val, remainder])
@@ -113,7 +119,10 @@ def check_flush(hand):
     else:
         val.append(0)
 
-    remainder = [0]
+    if answer:
+        remainder = [0]
+    else:
+        remainder = hand
 
     return([answer, val, remainder])
 
@@ -126,7 +135,10 @@ def check_straight_flush(hand):
     else:
         val.append(0)
 
-    remainder = [0]
+    if answer:
+        remainder = [0]
+    else:
+        remainder = hand
 
     return([answer, val, remainder])
 
@@ -143,7 +155,10 @@ def check_royal_flush(hand):
     else:
         val.append(0)
 
-    remainder = [0]
+    if answer:
+        remainder = [0]
+    else:
+        remainder = hand
 
     return([answer, val, remainder])
 
@@ -174,9 +189,9 @@ def winner(p1, p2):
                                           each[1][1])
         # running thru check functions in order, so if someone wins, return and stop
         #p1 wins
-        print(each[0])
-        print(p1_score)
-        print(p2_score)
+        # print(each[0])
+        # print(p1_score)
+        # print(p2_score)
 
 
         if p1_score[0] & ~p2_score[0]:
@@ -184,25 +199,34 @@ def winner(p1, p2):
         #p2 wins
         if ~p1_score[0] & p2_score[0]:
              return([2])
-    # tie!
-    # or highest card
-    return([0, p1_score, p2_score])
 
-# def tie_breaker()
+        # both score something!
+        if p1_score[0] & p2_score[0]:
+            return([0, p1_score, p2_score])
 
 
-# test  = ['3C', '3D', '3S', '7S', '7D']
-# func = "check_n_of_a_kind"
-# print(locals()[func](test,2,1))
 
 def tie_breaker(winner_result):
-    print(winner_result[1])
-    print(winner_result[2])
+    if winner_result[1][1][0] > winner_result[2][1][0]:
+        return(1)
+    elif winner_result[1][1][0] < winner_result[2][1][0]:
+        return(2)
+    else:
+        p1_max = max([straight_dict[x[0]] for x in winner_result[1][2]])
+        p2_max = max([straight_dict[x[0]] for x in winner_result[2][2]])
+        if p1_max > p2_max:
+            return(1)
+        elif p1_max < p2_max:
+            return(2)
+        else:
+            print('>>:{|')
+            print('i think if you have two identical full houses this breaks lol')
+            assert 5 == 6
 
 
 p1_wins = 0
 i = 0
-for each in file[:1]:
+for each in file:
     i += 1
     p1_hand = each[:5]
     p2_hand = each[5:]
@@ -220,7 +244,17 @@ for each in file[:1]:
         print('player 2 wins')
     if result[0] == 0:
         print('oh shit a tie')
-        tie_breaker(result)
+        tie_break = tie_breaker(result)
+        if tie_break == 1:
+            print('player 1 wins')
+            p1_wins += 1
+        elif tie_break == 2:
+            print('player 2 wins')
+        else:
+            print('NOT GOOD')
+            assert 5==6
+
+    print(p1_wins)
 
 
 # translate each hand to a point value
