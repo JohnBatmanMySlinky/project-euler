@@ -15,16 +15,16 @@ def concat_prime_test(a,b):
     return(is_prime(int(str(a)+str(b)))&is_prime(int(str(b)+str(a))))
 
 for a in primes:
-    for b in primes:
+    for b in [x for x in primes if x >a]:
         if concat_prime_test(a,b):
-            for c in primes:
+            for c in [x for x in primes if x > b]:
                 if concat_prime_test(a,c):
                     if concat_prime_test(b,c):
-                        for d in primes:
+                        for d in [x for x in primes if x > c]:
                             if concat_prime_test(a,d):
                                 if concat_prime_test(b,d):
                                     if concat_prime_test(c,d):
-                                        for e in primes:
+                                        for e in [x for x in primes if x > d]:
                                             if concat_prime_test(a,e):
                                                 if concat_prime_test(b,e):
                                                     if concat_prime_test(c,e):
