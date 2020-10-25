@@ -3,7 +3,8 @@
 # one is triangle, one is square, one is pentagonal etc...
 
 # (-b +/- sqrt(b^2-4ac))/2a
-
+import time
+start = time.time()
 func_dict = {
     'triangle': [0.5, 0.5, 0],
     'square': [1, 0, 0],
@@ -57,6 +58,7 @@ for a in space:
                             for each in check_for:
                                 if vals.count(each) >1:
                                     print(a+b+c+d+e+f)
+                                    print(time.time()-start)
                                     assert 5 == 6
 
 
