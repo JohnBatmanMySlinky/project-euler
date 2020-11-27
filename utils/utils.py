@@ -12,6 +12,10 @@ def is_prime(n):
 
     return(True)
 
+
+def is_permutation(j,k):
+    return(sorted([int(x) for x in str(j)]) == sorted([int(y) for y in str(k)]))
+
 def is_palindrome(x):
     if ~isinstance(x, str):
         x = str(x)
@@ -54,6 +58,15 @@ def prime_factorization(n):
     factors.append(int(n))
     return(factors)
 
+def totient(n):
+    for each in prime_factorization(n):
+        n *= (1-1.0/each)
+    return(int(n))
+
+def GCD(a,b):
+    while b:
+        a, b = b, a%b
+    return(a)
 
 if __name__ == "__main__":
     print((Sieve_of_Eratosthenes(50)))
