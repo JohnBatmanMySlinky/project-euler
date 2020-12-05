@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../utils')
 sys.path.append('utils')
-from utils import Sieve_of_Eratosthenes, is_permutation, totient
+from utils import Sieve_of_Eratosthenes, is_permutation
 
 # so now we have MIN n/totient & totient(n) = permutation n
 # so want to min 1/PROD(1-1/p)
