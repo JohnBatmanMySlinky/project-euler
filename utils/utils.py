@@ -1,3 +1,5 @@
+import math
+
 def is_prime(n):
     if n <= 3:
         return(n > 1)
@@ -46,20 +48,28 @@ def Sieve_of_Eratosthenes(n):
     return(winners)
 
 def prime_factorization(n):
-    i = 2
-    factors = []
-    if ~is_prime(n):
-        while i < n:
-            if n % i == 0:
-                n = n / i
-                factors.append(int(i))
-                i = 1
-            i = i + 1
-    factors.append(int(n))
-    return(factors)
+    res = []
+    # iterate over all even numbers first.
+    while n % 2 == 0:
+        res.append(2)
+        n //= 2
+    # try odd numbers up to sqrt(n)
+    limit = math.sqrt(n+1)
+    i = 3
+    while i <= limit:
+        if n % i == 0:
+            res.append(i)
+            n //= i
+            limit = math.sqrt(n+i)
+        else:
+            i += 2
+    if n != 1:
+        res.append(n)
+    return res
+
 
 def totient(n):
-    for each in prime_factorization(n):
+    for each in list(set(prime_factorization(n))):
         n *= (1-1.0/each)
     return(int(n))
 
