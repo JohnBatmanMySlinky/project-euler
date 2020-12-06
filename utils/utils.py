@@ -87,5 +87,11 @@ def farey_sequence_length(n):
         l += 1
     return(l+1)
 
+def factorial(n):
+    if n == 1:
+        return(n)
+    else:
+        return(n*factorial(n-1))
+
 if __name__ == "__main__":
     print((Sieve_of_Eratosthenes(50)))
