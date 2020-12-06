@@ -78,5 +78,14 @@ def GCD(a,b):
         a, b = b, a%b
     return(a)
 
+def farey_sequence_length(n):
+    l, a, b, c, d = 0, 0, 1, 1, n
+    while (c<=n):
+        p = int((n+b)/d)*c-a
+        q = int((n+b)/d)*d-b
+        a, b, c, d = c, d, p, q
+        l += 1
+    return(l+1)
+
 if __name__ == "__main__":
     print((Sieve_of_Eratosthenes(50)))
