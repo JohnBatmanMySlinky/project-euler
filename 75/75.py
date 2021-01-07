@@ -7,6 +7,7 @@
 from collections import defaultdict, deque
 
 # functions
+# Berggren's 3 transformation functions
 def T1(trip):
 	a = trip[0]
 	b = trip[1]
@@ -25,6 +26,8 @@ def T3(trip):
 	c = trip[2]
 	return((-a+2*b+2*c, -2*a+b+2*c, -2*a+2*b+3*c))
 
+# BFS tree traversal that also builds a tree of all primitive pythagorean triples via Berggren.
+# nodes are only added if L < 15*10**5
 def build_tree(L, queue, tree, node):
 	queue.append(node)
 
